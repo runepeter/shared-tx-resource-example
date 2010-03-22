@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:property-placeholder location="classpath:/environment.properties"/>
+
+    <bean id="dataSource" class="oracle.jdbc.pool.OracleDataSource" destroy-method="close">
+        <property name="URL" value="${oracle.url}"/>
+        <property name="user" value="${oracle.username}"/>
+        <property name="password" value="${oracle.password}"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <bean id="txTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+        <constructor-arg ref="transactionManager"/>
+    </bean>
+
+    <bean id="queueConnectionFactory" class="oracle.jms.AQjmsFactory" factory-method="getQueueConnectionFactory">
+        <constructor-arg ref="dataSource"/>
+    </bean>
+
+    <bean id="testQueue" class="no.jforce.jms.oracle.OracleQueueFactoryBean">
+        <constructor-arg index="0" ref="queueConnectionFactory"/>
+        <constructor-arg index="1" value="${oracle.username}"/>
+        <constructor-arg index="2" value="testmq"/>
+    </bean>
+
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="queueConnectionFactory"/>
+        <property name="defaultDestination" ref="testQueue"/>
+        <property name="receiveTimeout" value="100"/>
+        <property name="sessionTransacted" value="true"/>
+    </bean>
+
+</beans>

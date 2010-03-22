@@ -1,0 +1,21 @@
+This project provides a running example of a Shared Transaction Resource configuration spanning JDBC, Hibernate and JMS
+using Oracle 11g specific resources. With this configuration it is possible to commit transactions that span all three
+resources without a JTA transaction manager.
+
+1. Initial Setup
+This project requires access to an Oracle 11g server. It should work with 10g as well, but this I haven't testet yet. When trying to build the project for the first time, Maven will complain about missing com.oracle dependencies. These you have to harvest from your Oracle 11g server and make available to the project. I could have provided these dependencies as an embedded Maven repository along-side the project sources, but I fear those suited Oracle-lawyers. Drop me a line if you need help with this step.
+
+2. Prepare database
+In order to run the jUnit tests a table and a queue has to be created on the Oracle instance. The file src/main/resources/schema.sql contains three lines of Oracle SQL that you need to run.
+
+3. DataSource configuration
+Since I don't know the details of your Oracle instance, you need to edit the file src/main/resources/environment.properties such that it points at your Oracle instance with correct credentials. Again, drop me a line if this step is holding you back.
+
+4. Run the tests
+The project includes two jUnit 4 tests that demonstrates Shared Transaction Resource configuration with two and three resources sharing the same database connection. Enjoy!
+
+Kind Regards,
+
+Rune Peter Bjørnstad
+jForce.no
+
